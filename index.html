@@ -26,6 +26,7 @@
 
         #container {
             max-width: 1024px;
+            border: 1px solid darkred;
         }
     </style>
 </head>
@@ -116,6 +117,70 @@
         lineJoin: 'butt'
     });
     layer.add(routerBufferBorder);
+
+    var plotYAxis = new Konva.Arrow({
+        x: 89,
+        y: 460,
+        points: [0,0, 0, -275],
+        pointerLength: 20,
+        pointerWidth : 20,
+        fill: '#000000',
+        stroke: '#000000',
+        strokeWidth: 4
+    });
+    layer.add(plotYAxis);
+
+    var plotXAxis = new Konva.Arrow({
+        x: 72,
+        y: 440,
+        points: [0,0, 850, 0],
+        pointerLength: 20,
+        pointerWidth : 20,
+        fill: '#000000',
+        stroke: '#000000',
+        strokeWidth: 4
+    });
+    layer.add(plotXAxis);
+
+    var plotYAxisLabel = new Konva.Text({
+        x: 50,
+        y: 250,
+        text: 'W',
+        fontSize: 30,
+        fontFamily: 'Calibri',
+        fill: 'black'
+    });
+    layer.add(plotYAxisLabel);
+
+    var plotXAxisLabel = new Konva.Text({
+        x: 750,
+        y: 450,
+        text: 'Time',
+        fontSize: 30,
+        fontFamily: 'Calibri',
+        fill: 'black'
+    });
+    layer.add(plotXAxisLabel);
+
+    var windowSizeLabel = new Konva.Text({
+        x: 72,
+        y: 76,
+        text: 'W = 11.7',
+        fontSize: 24,
+        fontFamily: 'Calibri',
+        fill: 'black'
+    });
+    layer.add(windowSizeLabel);
+
+    var utilizationLabel = new Konva.Text({
+        x: 660,
+        y: 140,
+        text: 'util = 49%',
+        fontSize: 24,
+        fontFamily: 'Calibri',
+        fill: 'black'
+    });
+    layer.add(utilizationLabel);
 
     stage.add(layer);
 </script>
