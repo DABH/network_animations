@@ -5,183 +5,43 @@
     <script src="https://rawgit.com/konvajs/greensock-plugin/master/KonvaPlugin.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenLite.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TimelineLite.min.js"></script>
+    <script src="config.js"></script>
+    <script src="component.js"></script>
+    <script src="components/dynamicLabels.js"></script>
+    <script src="components/links.js"></script>
+    <script src="components/receiver.js"></script>
+    <script src="components/router.js"></script>
+    <script src="components/sender.js"></script>
+    <script src="components/windowSizePlot.js"></script>
     <meta charset="utf-8">
     <title>Networking Animation 1</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            background-color: #F0F0F0;
-            width: 100%;
-            height: 100%;
-        }
-
-        #aligner {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-        }
-
-        #container {
-            max-width: 1024px;
-            border: 1px solid darkred;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 <body>
 <div id="aligner">
     <div id="container"></div>
 </div>
 <script>
-    var width = 1024;
-    var height = 500;
+    function createStage() {
+        return new Konva.Stage({
+            container: 'container',
+            width: config.width,
+            height: config.height
+        });
+    }
 
-    var stage = new Konva.Stage({
-        container: 'container',
-        width: width,
-        height: height
-    });
+    function createComponents(layer) {
+        addComponent(layer, links());
+        addComponent(layer, sender());
+        addComponent(layer, receiver());
+        addComponent(layer, router());
+        addComponent(layer, windowSizePlot());
+        addComponent(layer, dynamicLabels());
+    }
 
+    var stage = createStage();
     var layer = new Konva.Layer();
-
-    var senderToRouterArrow = new Konva.Arrow({
-        x: 173.8,
-        y: 105.50,
-        points: [0,0, 255, 0],
-        pointerLength: 20,
-        pointerWidth : 20,
-        fill: '#5688BA',
-        stroke: '#5688BA',
-        strokeWidth: 4
-    });
-    layer.add(senderToRouterArrow);
-
-    var routerToReceiverArrow = new Konva.Arrow({
-        x: 585,
-        y: 105.50,
-        points: [0,0, 258.25, 0],
-        pointerLength: 20,
-        pointerWidth : 20,
-        fill: '#5688BA',
-        stroke: '#5688BA',
-        strokeWidth: 4
-    });
-    layer.add(routerToReceiverArrow);
-
-    var receiverToSenderArc = new Konva.Arrow({
-        x: 890,
-        y: 32.30,
-        points: [0,0, -750, 0],
-        pointerLength: 20,
-        pointerWidth : 20,
-        fill: '#5688BA',
-        stroke: '#5688BA',
-        strokeWidth: 4
-    });
-    layer.add(receiverToSenderArc);
-
-    var senderShape = new Konva.Circle({
-        x: 52.55+62.5,
-        y: 26.65+62.5,
-        radius: 62.5,
-        fill: 'gray'
-    });
-    layer.add(senderShape);
-
-    var receiverShape = new Konva.Circle({
-        x: 843.75+62.5,
-        y: 26.65+62.5,
-        radius: 62.5,
-        fill: 'gray'
-    });
-    layer.add(receiverShape);
-
-    var routerRect = new Konva.Rect({
-        x: 433.05,
-        y: 7.30,
-        width: 150,
-        height: 130,
-        fill: 'white',
-        stroke: 'gray',
-        strokeWidth: 4
-    });
-    layer.add(routerRect);
-
-    var routerBufferBorder = new Konva.Line({
-        points: [450, 128, 565, 128, 565, 78, 450, 78],
-        stroke: 'black',
-        strokeWidth: 4,
-        lineCap: 'butt',
-        lineJoin: 'butt'
-    });
-    layer.add(routerBufferBorder);
-
-    var plotYAxis = new Konva.Arrow({
-        x: 89,
-        y: 460,
-        points: [0,0, 0, -275],
-        pointerLength: 20,
-        pointerWidth : 20,
-        fill: '#000000',
-        stroke: '#000000',
-        strokeWidth: 4
-    });
-    layer.add(plotYAxis);
-
-    var plotXAxis = new Konva.Arrow({
-        x: 72,
-        y: 440,
-        points: [0,0, 850, 0],
-        pointerLength: 20,
-        pointerWidth : 20,
-        fill: '#000000',
-        stroke: '#000000',
-        strokeWidth: 4
-    });
-    layer.add(plotXAxis);
-
-    var plotYAxisLabel = new Konva.Text({
-        x: 50,
-        y: 250,
-        text: 'W',
-        fontSize: 30,
-        fontFamily: 'Calibri',
-        fill: 'black'
-    });
-    layer.add(plotYAxisLabel);
-
-    var plotXAxisLabel = new Konva.Text({
-        x: 750,
-        y: 450,
-        text: 'Time',
-        fontSize: 30,
-        fontFamily: 'Calibri',
-        fill: 'black'
-    });
-    layer.add(plotXAxisLabel);
-
-    var windowSizeLabel = new Konva.Text({
-        x: 72,
-        y: 76,
-        text: 'W = 11.7',
-        fontSize: 24,
-        fontFamily: 'Calibri',
-        fill: 'black'
-    });
-    layer.add(windowSizeLabel);
-
-    var utilizationLabel = new Konva.Text({
-        x: 660,
-        y: 140,
-        text: 'util = 49%',
-        fontSize: 24,
-        fontFamily: 'Calibri',
-        fill: 'black'
-    });
-    layer.add(utilizationLabel);
-
+    createComponents(layer);
     stage.add(layer);
 </script>
 
