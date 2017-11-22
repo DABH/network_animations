@@ -13,7 +13,7 @@ function router() {
     shapes.push(routerRect);
 
     var routerBufferBorder = new Konva.Line({
-        points: [450, 128, 565, 128, 565, 78, 450, 78],
+        points: [443, 128, 573, 128, 573, 83, 443, 83],
         stroke: 'black',
         strokeWidth: 4,
         lineCap: 'butt',

@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TimelineLite.min.js"></script>
     <script src="config.js"></script>
     <script src="component.js"></script>
+    <script src="components/bufferPackets.js"></script>
     <script src="components/dynamicLabels.js"></script>
     <script src="components/links.js"></script>
     <script src="components/receiver.js"></script>
@@ -30,6 +31,8 @@
         });
     }
 
+    var q_buffer = 8;
+
     function createComponents(layer) {
         addComponent(layer, links());
         addComponent(layer, sender());
@@ -37,12 +40,164 @@
         addComponent(layer, router());
         addComponent(layer, windowSizePlot());
         addComponent(layer, dynamicLabels());
+        addComponent(layer, bufferPackets(q_buffer));
     }
 
     var stage = createStage();
     var layer = new Konva.Layer();
     createComponents(layer);
     stage.add(layer);
+
+    var fps    = 120;
+    var uid    = 100;
+    var time   = 0;
+    var stop   = false;
+
+    // router
+    var q_queue  = 0;
+    var q_tx     = false;
+    var q_util   = 0;
+    var q_droppkt = -1;
+
+    // sender
+    var s_win    = 1;
+    var s_out    = 0;
+    var s_tx     = false;
+    var s_lost   = 9999;
+    var s_pktno  = 1;
+    var s_dropc  = 0;
+
+    function rem_queue() {
+        if (!q_tx && q_queue > 0) {
+            var o = stage.find('#QueuePkt' + q_queue.toString());
+            o.setAttr('visible', false);
+            q_queue -= 1;
+            if (q_droppkt === 0) {
+                //tx_packet("RouterPktI", true);
+                console.log('h1');
+                q_droppkt = -1;
+            } else {
+                console.log('h2');
+                tx_packet("RouterPktI", false);
+            }
+            q_droppkt -= 1;
+            if (q_droppkt > 0) {
+                console.log('h3');
+                //_level0.SenderShapeTop.dropTxt._x = 480 - q_droppkt * 120 / q_buffer;
+            }
+            q_tx = true;
+        }
+    }
+
+    function add_queue() {
+        if (q_queue < q_buffer) {
+            q_queue +=1;
+            if (!q_tx) {  // Currently not transmitting packet
+                console.log('rq');
+                rem_queue();
+            } else {   // If currently transmitting -> queue
+                console.log('else');
+                //var o:Object = eval("_level0.QueuePkt"+q_queue);
+                //o._visible = true;
+            }
+        } else {
+            console.log('e2');
+            //drop_pkt();
+        }
+    }
+
+    function createNewPacket(name, uid) {
+        if(name === 'sender'){
+            return new Konva.Rect({
+                x: 164,
+                y: 91,
+                width: 12,
+                height: 30,
+                fill: 'blue',
+                id: 'sender' + uid.toString()
+            });
+        }else if(name === 'RouterPktI'){
+            return new Konva.Rect({
+                x: 475,
+                y: 93,
+                width: 110,
+                height: 26,
+                fill: 'blue',
+                id: 'RouterPkt' + uid.toString()
+            });
+        }
+    }
+
+    function tx_packet(name, drop) {
+        var newPacket = createNewPacket(name, uid);
+        newPacket.setAttrs({
+            active: true,
+            tx_done: false,
+            drop: drop
+        });
+        layer.add(newPacket);
+        if(name === 'sender') {
+            var anim = new Konva.Animation(function (frame) {
+                if (!newPacket.getAttr('active'))
+                    return;
+
+                newPacket.setX(newPacket.getAttr('x') + 2 * (430 - 164) / fps);
+
+                if (newPacket.getAttr('x') > 430) {
+                    //console.log('add queue');
+                    add_queue();
+                    newPacket.destroy();
+                    this.stop();
+                }
+
+                if (!newPacket.getAttr('tx_done') && newPacket.getAttr('x') > 182) {
+                    newPacket.setAttr('tx_done', true);
+                    s_tx = false;
+                    do_sender();
+                }
+            }, layer);
+            anim.start();
+        }else if(name === 'RouterPktI'){
+            var anim = new Konva.Animation(function (frame) {
+                if (!newPacket.getAttr('active'))
+                    return;
+
+                newPacket.setX(newPacket.getAttr('x') + (830-515)/fps);
+
+                /*if (drop) {
+                    _level0.SenderShapeTop.dropTxt._x = xpos-20;
+                }*/
+
+                if(newPacket.getAttr('x') > 830){
+                    //recv_pkt(drop);
+                    console.log('rp!');
+                    newPacket.destroy();
+                    this.stop();
+                }
+
+                if(!newPacket.getAttr('tx_done') && newPacket.getAttr('x') > 590){
+                    newPacket.setAttr('tx_done', true);
+                    q_tx = false;
+                    rem_queue();
+                }
+            }, layer);
+            anim.start();
+        }
+        uid += 1;
+    }
+
+    function do_sender() {
+        if(stop)
+            return;
+        if(!s_tx && s_out < Math.floor(s_win)) {
+            tx_packet("sender",false);
+            s_out += 1;
+            s_tx = true;
+            s_pktno += 1;
+        }
+    }
+
+    do_sender();
 </script>
 
 </body>
