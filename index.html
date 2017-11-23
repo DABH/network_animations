@@ -31,33 +31,10 @@
         });
     }
 
-    var q_buffer = 8;
-
-    function createComponents(layer) {
-        addComponent(layer, links());
-        addComponent(layer, sender());
-        addComponent(layer, receiver());
-        addComponent(layer, router());
-        addComponent(layer, windowSizePlot());
-        addComponent(layer, dynamicLabels());
-        addComponent(layer, bufferPackets(q_buffer));
-    }
-
-    var stage = createStage();
-    var layer = new Konva.Layer();
-    createComponents(layer);
-    stage.add(layer);
-
     var fps    = 120;
     var uid    = 100;
     var time   = 0;
     var stop   = false;
-
-    // router
-    var q_queue  = 0;
-    var q_tx     = false;
-    var q_util   = 0;
-    var q_droppkt = -1;
 
     // sender
     var s_win    = 1;
@@ -67,10 +44,37 @@
     var s_pktno  = 1;
     var s_dropc  = 0;
 
+    // router
+    var q_queue  = 0;
+    var q_tx     = false;
+    var q_util   = 0;
+    var q_droppkt = -1;
+    var q_buffer = 8;
+
+    function createComponents(linkLayer, packetLayer, componentLayer) {
+        addComponent(linkLayer, links());
+        addComponent(componentLayer, sender());
+        addComponent(componentLayer, receiver());
+        addComponent(componentLayer, router());
+        addComponent(componentLayer, windowSizePlot());
+        addComponent(componentLayer, dynamicLabels(s_win, q_util));
+        addComponent(componentLayer, bufferPackets(q_buffer));
+    }
+
+    var stage = createStage();
+    var linkLayer = new Konva.Layer(); // ha
+    var packetLayer = new Konva.Layer();
+    var componentLayer = new Konva.Layer();
+    createComponents(linkLayer, packetLayer, componentLayer);
+    stage.add(linkLayer);
+    stage.add(packetLayer);
+    stage.add(componentLayer);
+
     function rem_queue() {
         if (!q_tx && q_queue > 0) {
-            var o = stage.find('#QueuePkt' + q_queue.toString());
-            o.setAttr('visible', false);
+            var o = stage.find('#QueuePkt' + q_queue.toString())[0];
+            o.visible(false);
+            componentLayer.draw();
             q_queue -= 1;
             if (q_droppkt === 0) {
                 //tx_packet("RouterPktI", true);
@@ -97,8 +101,9 @@
                 rem_queue();
             } else {   // If currently transmitting -> queue
                 console.log('else');
-                //var o:Object = eval("_level0.QueuePkt"+q_queue);
-                //o._visible = true;
+                var o = stage.find('#QueuePkt'+q_queue.toString())[0];
+                o.visible(true);
+                componentLayer.draw();
             }
         } else {
             console.log('e2');
@@ -125,7 +130,38 @@
                 fill: 'blue',
                 id: 'RouterPkt' + uid.toString()
             });
+        }else if(name === 'AckI'){
+            return new Konva.Rect({
+                x: 841,
+                y: 24,
+                width: 15,
+                height: 15,
+                fill: 'red',
+                id: 'AckPkt' + uid.toString()
+            });
         }
+    }
+
+    function recv_pkt(drop) {
+        tx_packet("AckI", drop);
+    }
+
+    function recv_ack() {
+        if (s_pktno >= s_lost) {
+            s_win   = Math.floor(s_win/2.0);
+            s_lost  = 9999;
+            s_out   = s_out - s_dropc -1;
+            s_dropc = 0;
+        } else {
+            if (s_win >= s_out) {
+                s_win = s_win + 1.0/Math.floor(s_win)+0.0000001;
+            }
+            s_out -= 1;
+            do_sender();
+        }
+        //console.log(stage.find("#windowSizeLabel")[0]);
+        stage.find("#windowSizeLabel")[0].text('W = '+Math.floor(10*s_win)/10.0);
+        componentLayer.draw();
     }
 
     function tx_packet(name, drop) {
@@ -135,7 +171,7 @@
             tx_done: false,
             drop: drop
         });
-        layer.add(newPacket);
+        packetLayer.add(newPacket);
         if(name === 'sender') {
             var anim = new Konva.Animation(function (frame) {
                 if (!newPacket.getAttr('active'))
@@ -155,7 +191,7 @@
                     s_tx = false;
                     do_sender();
                 }
-            }, layer);
+            }, packetLayer);
             anim.start();
         }else if(name === 'RouterPktI'){
             var anim = new Konva.Animation(function (frame) {
@@ -169,7 +205,7 @@
                 }*/
 
                 if(newPacket.getAttr('x') > 830){
-                    //recv_pkt(drop);
+                    recv_pkt(drop);
                     console.log('rp!');
                     newPacket.destroy();
                     this.stop();
@@ -180,7 +216,28 @@
                     q_tx = false;
                     rem_queue();
                 }
-            }, layer);
+            }, packetLayer);
+            anim.start();
+        }else if(name === 'AckI'){
+            var anim = new Konva.Animation(function (frame) {
+                if (!newPacket.getAttr('active'))
+                    return;
+
+                /*if(drop){
+                    _level0.SenderShapeTop.dropTxt._x = _x-70;
+                    _level0.SenderShapeTop.dropTxt._y = _y-60;
+                }*/
+
+                newPacket.setX(newPacket.getAttr('x') - (845-164)/fps);
+
+                if(newPacket.getAttr('x') < 164){
+                    console.log('ra!');
+                    recv_ack();
+                    //if(drop) _level0.SenderShapeTop.dropTxt._visible = false;
+                    newPacket.destroy();
+                    this.stop();
+                }
+            }, packetLayer);
             anim.start();
         }
         uid += 1;
@@ -197,6 +254,39 @@
         }
     }
 
+    function updatePlotAndUtilization() {
+        /*if (Key.isDown(Key.RIGHT)) {
+            _level0.fps = 30;
+        }
+        if (Key.isDown(Key.LEFT)) {
+            _level0.fps = 360;
+        }
+        if (Key.isDown(Key.DOWN)) {
+            _level0.fps = 120;
+        }*/
+
+        // Check if over, if yes stop
+        if(stop)
+            return;
+
+        // Plot graph
+        time += 5.0/fps;
+        stage.find('#windowSizeCurve')[0].points(stage.find('#windowSizeCurve')[0].points().concat([89+time, 440.0-s_win*10.0]));
+        if(time > 695)
+            stop = true;
+
+        // Update Utilization
+        f = 0.01*30/fps;
+        if(q_tx){
+            q_util = q_util*(1-f)+ f;
+        } else {
+            q_util = q_util*(1-f);
+        }
+        stage.find('#utilizationLabel')[0].text('util = '+Math.floor(q_util*20.0+0.5)*5+'%');
+        componentLayer.draw();
+    }
+
+    window.setInterval(updatePlotAndUtilization, 5.0/fps * 1000.0);
     do_sender();
 </script>
 

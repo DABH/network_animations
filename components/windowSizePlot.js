@@ -45,5 +45,15 @@ function windowSizePlot() {
     });
     shapes.push(plotXAxisLabel);
 
+    var windowSizeCurve = new Konva.Line({
+        points: [89, 440-1*10.0],
+        stroke: 'red',
+        strokeWidth: 4,
+        lineCap: 'round',
+        lineJoin: 'round',
+        id: 'windowSizeCurve'
+    });
+    shapes.push(windowSizeCurve);
+
     return shapes;
 }

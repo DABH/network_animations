@@ -1,10 +1,10 @@
-function dynamicLabels() {
+function dynamicLabels(s_win, q_util) {
     var shapes = [];
 
     var windowSizeLabel = new Konva.Text({
         x: 72,
         y: 76,
-        text: 'W = 11.7',
+        text: 'W = '+s_win.toString(),
         fontSize: 24,
         fontFamily: 'Calibri',
         fill: 'black',
@@ -15,7 +15,7 @@ function dynamicLabels() {
     var utilizationLabel = new Konva.Text({
         x: 660,
         y: 140,
-        text: 'util = 49%',
+        text: 'util = '+q_util.toString()+'%',
         fontSize: 24,
         fontFamily: 'Calibri',
         fill: 'black',
