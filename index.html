@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.rawgit.com/MaxArt2501/es6-math/master/es6-math.min.js"></script>
     <!--<script src="https://cdn.rawgit.com/jondavidjohn/hidpi-canvas-polyfill/master/dist/hidpi-canvas.min.js"></script>-->
     <script src="https://cdn.rawgit.com/konvajs/konva/1.7.6/konva.min.js"></script>
-    <script src="https://rawgit.com/konvajs/greensock-plugin/master/KonvaPlugin.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenLite.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TimelineLite.min.js"></script>
     <script src="config.js"></script>
     <script src="component.js"></script>
     <script src="components/bufferPackets.js"></script>
@@ -64,9 +62,9 @@
     }
 
     var stage = createStage();
-    var linkLayer = new Konva.Layer(); // ha
-    var packetLayer = new Konva.Layer();
-    var componentLayer = new Konva.Layer();
+    var linkLayer = new Konva.Layer({}); // ha
+    var packetLayer = new Konva.Layer({});
+    var componentLayer = new Konva.Layer({});
     createComponents(linkLayer, packetLayer, componentLayer);
     stage.add(linkLayer);
     stage.add(packetLayer);
@@ -78,7 +76,6 @@
 
         s_dropc += 1;
         q_droppkt = q_queue-1;
-        //stage.find('#dropLabel')[0].x(480-q_droppkt*120/q_buffer);
         stage.find('#dropLabel')[0].x(30);
         stage.find('#dropLabel')[0].y(50);
         stage.find('#dropLabel')[0].visible(true);
@@ -191,52 +188,51 @@
             drop: drop
         });
         packetLayer.add(newPacket);
+        var anim;
         if(name === 'sender') {
-            var anim = new Konva.Animation(function (frame) {
+            anim = new Konva.Animation(function() {
                 if (!newPacket.getAttr('active'))
                     return;
 
-                newPacket.setX(newPacket.getAttr('x') + 2.0 * (430.0 - 164.0) / fps);
+                newPacket.x(newPacket.x() + 2.0 * (430.0 - 164.0) / fps);
 
-                if (newPacket.getAttr('x') > 430.0) {
+                if (newPacket.x() > 430.0) {
                     add_queue();
                     newPacket.destroy();
                     this.stop();
                 }
 
-                if (!newPacket.getAttr('tx_done') && newPacket.getAttr('x') > 182.0) {
+                if (!newPacket.getAttr('tx_done') && newPacket.x() > 182.0) {
                     newPacket.setAttr('tx_done', true);
                     s_tx = false;
                     do_sender();
                 }
             }, packetLayer);
-            anim.start();
         }else if(name === 'RouterPktI'){
-            var anim = new Konva.Animation(function (frame) {
+            anim = new Konva.Animation(function() {
                 if (!newPacket.getAttr('active'))
                     return;
 
-                newPacket.setX(newPacket.getAttr('x') + (830.0-515.0)/fps);
+                newPacket.x(newPacket.x() + (830.0-515.0)/fps);
 
                 if (drop){
                     stage.find('#dropLabel')[0].x(stage.find('#QueuePkt1')[0].x()-10 + newPacket.x() - 475.05);
                 }
 
-                if(newPacket.getAttr('x') > 830.0){
+                if(newPacket.x() > 830.0){
                     recv_pkt(drop);
                     newPacket.destroy();
                     this.stop();
                 }
 
-                if(!newPacket.getAttr('tx_done') && newPacket.getAttr('x') > 590.0){
+                if(!newPacket.getAttr('tx_done') && newPacket.x() > 590.0){
                     newPacket.setAttr('tx_done', true);
                     q_tx = false;
                     rem_queue();
                 }
             }, packetLayer);
-            anim.start();
         }else if(name === 'AckI'){
-            var anim = new Konva.Animation(function (frame) {
+            anim = new Konva.Animation(function() {
                 if (!newPacket.getAttr('active'))
                     return;
 
@@ -245,9 +241,9 @@
                     stage.find('#dropLabel')[0].y(newPacket.y() - 20);
                 }
 
-                newPacket.setX(newPacket.getAttr('x') - (845.0-164.0)/fps/1.33);
+                newPacket.x(newPacket.x() - (845.0-164.0)/fps/1.33);
 
-                if(newPacket.getAttr('x') < 164.0){
+                if(newPacket.x() < 164.0){
                     recv_ack();
                     if(drop)
                         stage.find('#dropLabel')[0].visible(false);
@@ -255,9 +251,8 @@
                     this.stop();
                 }
             }, packetLayer);
-            anim.start();
         }else if(name === 'dropped') {
-            var anim = new Konva.Animation(function (frame) {
+            anim = new Konva.Animation(function() {
                 if (!newPacket.getAttr('active'))
                     return;
 
@@ -269,8 +264,8 @@
                     this.stop();
                 }
             }, packetLayer);
-            anim.start();
         }
+        anim.start();
         uid += 1;
     }
 
@@ -298,7 +293,7 @@
             stop = true;
 
         // Update Utilization
-        f = 0.01*30.0/fps;
+        var f = 0.01*30.0/fps;
         if(q_tx){
             q_util = q_util*(1-f)+ f;
         } else {
