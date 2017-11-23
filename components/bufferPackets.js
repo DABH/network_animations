@@ -1,7 +1,7 @@
 function bufferPackets(q_buffer) {
     var shapes = [];
 
-    for (i=1; i<=q_buffer; i++) {
+    for (var i=1; i<=q_buffer; i++) {
         var packet = new Konva.Rect({
             x: 553,
             y: 91,
