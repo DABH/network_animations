@@ -31,13 +31,13 @@
         });
     }
 
-    var fps    = 120;
+    var fps    = 120.0;
     var uid    = 100;
-    var time   = 0;
+    var time   = 0.0;
     var stop   = false;
 
     // sender
-    var s_win    = 1;
+    var s_win    = 1.0;
     var s_out    = 0;
     var s_tx     = false;
     var s_lost   = 9999;
@@ -70,6 +70,19 @@
     stage.add(packetLayer);
     stage.add(componentLayer);
 
+    function drop_pkt() {
+        if(s_lost === 9999)
+            s_lost = s_pktno + s_out-2;
+
+        s_dropc += 1;
+        q_droppkt = q_queue-1;
+        //stage.find('#dropLabel')[0].x(480-q_droppkt*120/q_buffer);
+        stage.find('#dropLabel')[0].x(30);
+        stage.find('#dropLabel')[0].y(50);
+        stage.find('#dropLabel')[0].visible(true);
+        tx_packet("dropped",false);
+    }
+
     function rem_queue() {
         if (!q_tx && q_queue > 0) {
             var o = stage.find('#QueuePkt' + q_queue.toString())[0];
@@ -77,7 +90,7 @@
             componentLayer.draw();
             q_queue -= 1;
             if (q_droppkt === 0) {
-                //tx_packet("RouterPktI", true);
+                tx_packet("RouterPktI", true);
                 console.log('h1');
                 q_droppkt = -1;
             } else {
@@ -87,7 +100,7 @@
             q_droppkt -= 1;
             if (q_droppkt > 0) {
                 console.log('h3');
-                //_level0.SenderShapeTop.dropTxt._x = 480 - q_droppkt * 120 / q_buffer;
+                stage.find('#dropLabel')[0].x(stage.find('#QueuePkt' + q_droppkt.toString())[0].x()-10);
             }
             q_tx = true;
         }
@@ -107,7 +120,7 @@
             }
         } else {
             console.log('e2');
-            //drop_pkt();
+            drop_pkt();
         }
     }
 
@@ -139,6 +152,17 @@
                 fill: 'red',
                 id: 'AckPkt' + uid.toString()
             });
+        }else if(name === 'dropped'){
+            var packet = new Konva.Rect({
+                x: 432,
+                y: 93,
+                width: 12,
+                height: 30,
+                fill: 'blue',
+                id: 'DroppedPkt' + uid.toString()
+            });
+            packet.setAttr('dy', 0);
+            return packet;
         }
     }
 
@@ -148,19 +172,19 @@
 
     function recv_ack() {
         if (s_pktno >= s_lost) {
-            s_win   = Math.floor(s_win/2.0);
+            s_win   = Math.trunc(s_win/2.0);
             s_lost  = 9999;
-            s_out   = s_out - s_dropc -1;
+            s_out   = s_out - s_dropc - 1;
             s_dropc = 0;
         } else {
             if (s_win >= s_out) {
-                s_win = s_win + 1.0/Math.floor(s_win)+0.0000001;
+                s_win = s_win + 1.0/Math.trunc(s_win)+0.000001;
             }
             s_out -= 1;
             do_sender();
         }
         //console.log(stage.find("#windowSizeLabel")[0]);
-        stage.find("#windowSizeLabel")[0].text('W = '+Math.floor(10*s_win)/10.0);
+        stage.find("#windowSizeLabel")[0].text('W = '+Math.trunc(10.0*s_win)/10.0);
         componentLayer.draw();
     }
 
@@ -177,16 +201,16 @@
                 if (!newPacket.getAttr('active'))
                     return;
 
-                newPacket.setX(newPacket.getAttr('x') + 2 * (430 - 164) / fps);
+                newPacket.setX(newPacket.getAttr('x') + 2.0 * (430.0 - 164.0) / fps);
 
-                if (newPacket.getAttr('x') > 430) {
+                if (newPacket.getAttr('x') > 430.0) {
                     //console.log('add queue');
                     add_queue();
                     newPacket.destroy();
                     this.stop();
                 }
 
-                if (!newPacket.getAttr('tx_done') && newPacket.getAttr('x') > 182) {
+                if (!newPacket.getAttr('tx_done') && newPacket.getAttr('x') > 182.0) {
                     newPacket.setAttr('tx_done', true);
                     s_tx = false;
                     do_sender();
@@ -198,20 +222,20 @@
                 if (!newPacket.getAttr('active'))
                     return;
 
-                newPacket.setX(newPacket.getAttr('x') + (830-515)/fps);
+                newPacket.setX(newPacket.getAttr('x') + (830.0-515.0)/fps);
 
-                /*if (drop) {
-                    _level0.SenderShapeTop.dropTxt._x = xpos-20;
-                }*/
+                if (drop){
+                    stage.find('#dropLabel')[0].x(newPacket.x());
+                }
 
-                if(newPacket.getAttr('x') > 830){
+                if(newPacket.getAttr('x') > 830.0){
                     recv_pkt(drop);
                     console.log('rp!');
                     newPacket.destroy();
                     this.stop();
                 }
 
-                if(!newPacket.getAttr('tx_done') && newPacket.getAttr('x') > 590){
+                if(!newPacket.getAttr('tx_done') && newPacket.getAttr('x') > 590.0){
                     newPacket.setAttr('tx_done', true);
                     q_tx = false;
                     rem_queue();
@@ -223,17 +247,32 @@
                 if (!newPacket.getAttr('active'))
                     return;
 
-                /*if(drop){
-                    _level0.SenderShapeTop.dropTxt._x = _x-70;
-                    _level0.SenderShapeTop.dropTxt._y = _y-60;
-                }*/
+                if(drop){
+                    stage.find('#dropLabel')[0].x(newPacket.x() - 70);
+                    stage.find('#dropLabel')[0].y(newPacket.y() - 20);
+                }
 
-                newPacket.setX(newPacket.getAttr('x') - (845-164)/fps);
+                newPacket.setX(newPacket.getAttr('x') - (845.0-164.0)/fps);
 
-                if(newPacket.getAttr('x') < 164){
+                if(newPacket.getAttr('x') < 164.0){
                     console.log('ra!');
                     recv_ack();
-                    //if(drop) _level0.SenderShapeTop.dropTxt._visible = false;
+                    if(drop)
+                        stage.find('#dropLabel')[0].visible(false);
+                    newPacket.destroy();
+                    this.stop();
+                }
+            }, packetLayer);
+            anim.start();
+        }else if(name === 'dropped') {
+            var anim = new Konva.Animation(function (frame) {
+                if (!newPacket.getAttr('active'))
+                    return;
+
+                newPacket.setAttr('dy', newPacket.getAttr('dy') + 2);
+                newPacket.y(93 + newPacket.getAttr('dy'));
+
+                if (newPacket.getAttr('dy') > 200) {
                     newPacket.destroy();
                     this.stop();
                 }
@@ -246,7 +285,7 @@
     function do_sender() {
         if(stop)
             return;
-        if(!s_tx && s_out < Math.floor(s_win)) {
+        if(!s_tx && s_out < Math.trunc(s_win)) {
             tx_packet("sender",false);
             s_out += 1;
             s_tx = true;
@@ -255,15 +294,6 @@
     }
 
     function updatePlotAndUtilization() {
-        /*if (Key.isDown(Key.RIGHT)) {
-            _level0.fps = 30;
-        }
-        if (Key.isDown(Key.LEFT)) {
-            _level0.fps = 360;
-        }
-        if (Key.isDown(Key.DOWN)) {
-            _level0.fps = 120;
-        }*/
 
         // Check if over, if yes stop
         if(stop)
@@ -276,15 +306,28 @@
             stop = true;
 
         // Update Utilization
-        f = 0.01*30/fps;
+        f = 0.01*30.0/fps;
         if(q_tx){
             q_util = q_util*(1-f)+ f;
         } else {
             q_util = q_util*(1-f);
         }
-        stage.find('#utilizationLabel')[0].text('util = '+Math.floor(q_util*20.0+0.5)*5+'%');
+        stage.find('#utilizationLabel')[0].text('util = '+Math.trunc(q_util*20.0+0.5)*5+'%');
         componentLayer.draw();
     }
+
+    document.addEventListener('keydown', function(event) {
+        const key = event.key;
+        if (key === 'ArrowRight') {
+            fps = 15.0;
+        }
+        if (key === 'ArrowLeft') {
+            fps = 360.0;
+        }
+        if (key === 'ArrowDown') {
+            fps = 120.0;
+        }
+    });
 
     window.setInterval(updatePlotAndUtilization, 5.0/fps * 1000.0);
     do_sender();

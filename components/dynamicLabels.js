@@ -23,5 +23,17 @@ function dynamicLabels(s_win, q_util) {
     });
     shapes.push(utilizationLabel);
 
+    var dropLabel = new Konva.Text({
+        x: 150,
+        y: 50,
+        text: 'drop',
+        fontSize: 24,
+        fontFamily: 'Calibri',
+        fill: 'black',
+        id: 'dropLabel',
+        visible: false
+    });
+    shapes.push(dropLabel);
+
     return shapes;
 }
