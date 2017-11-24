@@ -1,3 +1,5 @@
+![TravisCI Build Status](https://travis-ci.org/DABH/network_animations.svg?branch=master)
+
 # Network Animations
 
 This is a suite of network animations built using modern web technologies.
