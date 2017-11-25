@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const UglifyJs = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
 
@@ -12,7 +13,8 @@ module.exports = {
     entry: {
         'index.bundle.js': './src/index.ts',
         'bundle.min.css': [
-            __dirname + '/src/style.css'
+            __dirname + '/src/style.css',
+            __dirname + '/node_modules/bootstrap/dist/css/bootstrap.min.css'
         ]
     },
     output: {
@@ -27,7 +29,7 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['es2015'],
+                        presets: ['env'],
                         sourceMap: false
                     }
                 }
@@ -61,7 +63,17 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
+            Popper: ['popper.js', 'default']
+        }),
+        new UglifyJs({
+            uglifyOptions: {
+                compress: true
+            }
+        }),
         new HtmlWebpackPlugin({
             template: 'src/index.pug',
             filename: 'index.html',

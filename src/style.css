@@ -1,3 +1,16 @@
+/*
+ * File: style.css
+ * Description: Styles for the animation suite.
+ *
+ * Copyright 2017 <https://github.com/DABH>
+ *
+ * This file is part of network_animations, a collection of network
+ * animations built using modern web technologies.
+ * (see https://github.com/DABH/web_animations).  It is licensed under the
+ * terms described in LICENSE.md.  If you did not receive a copy of this file,
+ * see <https://github.com/DABH/web_animations>.
+ */
+
 html, body {
     margin: 0;
     padding: 0;

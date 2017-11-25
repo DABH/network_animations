@@ -1,7 +1,13 @@
 {
   "presets": [
     [
-      "env"
+      "env",
+      {
+        "targets": {
+          "node": "current",
+          "uglify": true
+        }
+      }
     ]
   ],
   "env": {
