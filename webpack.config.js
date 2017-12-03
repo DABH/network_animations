@@ -12,6 +12,8 @@ module.exports = {
     },
     entry: {
         'index.bundle.js': './src/index.ts',
+        'aimd1.bundle.js': './src/aimd1.ts',
+        'aimd2.bundle.js': './src/aimd2.ts',
         'bundle.min.css': [
             __dirname + '/src/style.css',
             __dirname + '/node_modules/bootstrap/dist/css/bootstrap.min.css'
@@ -59,6 +61,15 @@ module.exports = {
                         }
                     }
                 })
+            },
+            {
+                test: /\.(jpg|png|svg)$/,
+                use: {
+                    loader: "file-loader",
+                    options: {
+                        name: "./img/[name].[ext]"
+                    }
+                }
             }
         ]
     },
@@ -78,6 +89,16 @@ module.exports = {
             template: 'src/index.pug',
             filename: 'index.html',
             chunks: ['global', 'index.bundle.js']
+        }),
+        new HtmlWebpackPlugin({
+            template: 'src/aimd1.pug',
+            filename: './animations/aimd1.html',
+            chunks: ['global', 'aimd1.bundle.js']
+        }),
+        new HtmlWebpackPlugin({
+            template: 'src/aimd2.pug',
+            filename: './animations/aimd2.html',
+            chunks: ['global', 'aimd2.bundle.js']
         }),
         extractCSS
     ]

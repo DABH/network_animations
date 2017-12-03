@@ -1,38 +1,80 @@
-doctype
-html(lang="en")
-    head
-        meta(charset="utf-8")
-        meta(http-equiv="X-UA-Compatible", content="IE=edge")
-        meta(name="viewport", content="width=device-width, initial-scale=1")
-        title Networking Animation 1
-        // HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries
-        //if lt IE 9
-            script(src='https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js')
-            script(src='https://oss.maxcdn.com/respond/1.4.2/respond.min.js')
-        link(rel="stylesheet", href="bundle.min.css", type="text/css")
-    body
-        nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top
-            a.navbar-brand(href="#") Navbar
-            button.navbar-toggler(type="button", data-toggle="collapse", data-target="#navbarsExampleDefault", aria-controls="navbarsExampleDefault", aria-expanded="false", aria-label="Toggle navigation")
-                span.navbar-toggler-icon
-            #navbarsExampleDefault.collapse.navbar-collapse
-                ul.navbar-nav.mr-auto
-                    li.nav-item.active
-                        a.nav-link(href="#")
-                            | Home
-                            span.sr-only (current)
-                    li.nav-item
-                        a.nav-link(href="#") Link
-                    li.nav-item
-                        a.nav-link.disabled(href="#") Disabled
-                    li.nav-item.dropdown
-                        a#dropdown01.nav-link.dropdown-toggle(href="http://example.com", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") Dropdown
-                        .dropdown-menu(aria-labelledby="dropdown01")
-                            a.dropdown-item(href="#") Action
-                            a.dropdown-item(href="#") Another action
-                            a.dropdown-item(href="#") Something else here
-                form.form-inline.my-2.my-lg-0
-                    input.form-control.mr-sm-2(type="text", placeholder="Search", aria-label="Search")
-                    button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Search
-        div#aligner
-            div#container
+extends template.pug
+
+block content
+    nav.navbar.navbar-expand-md.fixed-top
+        a.navbar-brand(href="#") Network Animations
+        button.navbar-toggler(type="button", data-toggle="collapse", data-target="#siteNavbar", aria-controls="siteNavbar", aria-expanded="false", aria-label="Toggle navigation")
+            span.navbar-toggler-icon
+        #siteNavbar.collapse.navbar-collapse
+            ul.navbar-nav.mr-auto
+                li.nav-item.active
+                    a.nav-link(href="#")
+                        | Home
+                        span.sr-only (current)
+                li.nav-item.dropdown
+                    a#animationsDropdown.nav-link.dropdown-toggle(href="#", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") Animations
+                    .dropdown-menu(aria-labelledby="animationsDropdown")
+                        a.dropdown-item(href="/animations/aimd1.html") Single AIMD Flow 1
+                        a.dropdown-item(href="/animations/aimd2.html") Single AIMD Flow 2
+                li.nav-item
+                    a.nav-link(href="https://github.com/DABH/network_animations") GitHub
+    main(role="main")
+        div.container-fluid
+            div.row
+                div.col-md-1
+                div.col-md-7
+                    div.container-fluid
+                        div.row
+                            div.col-md-12
+                                div.jumbotron.shadowed.home-jumbotron
+                                    h1.display-3 Network Animations
+                                    p.lead Welcome!  This website provides a growing collection of animations demonstrating
+                                        | &nbsp;principles of computer networking.  Please browse the demos below,
+                                        |and check out information on contributing to this open-source
+                                        | animation suite.
+                        div.row
+                            div.col-md-12
+                                h2 All Animations
+                                hr
+                        div.row
+                            a.col-md-4.animation-panel-container(href="/animations/aimd1.html")
+                                div.jumbotron.animation-panel
+                                    span.animation-panel-content-wrapper
+                                        span.animation-panel-image-wrapper
+                                            img.animation-panel-image(src=require("./img/aimd1.png"))
+                                        span.animation-panel-text-wrapper
+                                            h4.animation-panel-header Single AIMD Flow 1
+                                            p.animation-panel-description Demonstrates the dynamics of a single AIMD flow
+                                                | &nbsp;with a buffer that holds 8 packets.
+                            a.col-md-4.animation-panel-container(href="/animations/aimd2.html")
+                                div.jumbotron.animation-panel
+                                    span.animation-panel-content-wrapper
+                                        span.animation-panel-image-wrapper
+                                            img.animation-panel-image(src=require("./img/aimd2.png"))
+                                        span.animation-panel-text-wrapper
+                                            h4.animation-panel-header Single AIMD Flow 2
+                                            p.animation-panel-description Demonstrates the dynamics of a single AIMD flow
+                                                | &nbsp;with a buffer that holds 1 packet.
+                div.col-md-3
+                    div.jumbotron.shadowed(style="height: 100%;")
+                        h2 Contents
+                        ul
+                            li
+                                a(href="#") Home
+                            li
+                                a(href="/animations/aimd1.html") Single AIMD Flow 1
+                            li
+                                a(href="/animations/aimd2.html") Single AIMD Flow 2
+                        h2 Contributing
+                        p Please check out&nbsp;
+                            a(href="https://github.com/DABH/network_animations") our repository
+                            | &nbsp;on GitHub for details on contributing.  We welcome bug reports and suggestions for
+                            | new animations.
+                        h2 About
+                        p Please see README.md on GitHub for information about this project, and see LICENSE.md on
+                            | &nbsp;GitHub for license details.
+                div.col-md-1
+
+    //footer.footer
+    //    div.container
+    //        span.text-muted Place sticky footer content here.
