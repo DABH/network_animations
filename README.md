@@ -2,7 +2,7 @@
 
 # Network Animations
 
-This is a suite of network animations built using modern web technologies.
+This is a suite of network animations built using modern web technologies.  View live at https://dabh.github.io/network_animations/.
 
 # Organization
 
