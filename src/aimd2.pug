@@ -2,17 +2,17 @@ extends template.pug
 
 block content
     nav.navbar.navbar-expand-md.fixed-top
-        a.navbar-brand(href="/") Network Animations
+        a.navbar-brand(href="/network_animations/") Network Animations
         button.navbar-toggler(type="button", data-toggle="collapse", data-target="#siteNavbar", aria-controls="siteNavbar", aria-expanded="false", aria-label="Toggle navigation")
             span.navbar-toggler-icon
         #siteNavbar.collapse.navbar-collapse
             ul.navbar-nav.mr-auto
                 li.nav-item
-                    a.nav-link(href="/") Home
+                    a.nav-link(href="/network_animations/") Home
                 li.nav-item.active.dropdown
                     a#animationsDropdown.nav-link.dropdown-toggle(href="#", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") Animations
                     .dropdown-menu(aria-labelledby="animationsDropdown")
-                        a.dropdown-item(href="/animations/aimd1.html") Single AIMD Flow 1
+                        a.dropdown-item(href="/network_animations/animations/aimd1.html") Single AIMD Flow 1
                         a.dropdown-item(href="#")
                             | Single AIMD Flow 2
                             span.sr-only (current)

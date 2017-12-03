@@ -21,7 +21,8 @@ module.exports = {
     },
     output: {
         filename: '[name]',
-        path: path.resolve(__dirname, 'dist/')
+        path: path.resolve(__dirname, 'dist/'),
+        publicPath: '/network_animations/'
     },
     module: {
         rules: [
