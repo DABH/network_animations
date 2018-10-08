@@ -50,11 +50,9 @@ class SingleAIMDFlow extends Animation {
 
     constructor(props?: object) {
         super(props);
-        console.log('new single!');
         this.bufferCapacity = props['bufferCapacity'] || 8;
 
         this.stage = this.createStage();
-        console.log('made stage!');
         this.createComponents(this.layers);
         this.stage.add(this.layers['linkLayer']);
         this.stage.add(this.layers['packetLayer']);

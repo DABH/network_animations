@@ -50,7 +50,6 @@ class Animation {
     };
 
     constructor(props?: object) {
-        console.log('new super');
         this.width = props['width'] || 1024;
         this.height = props['height'] || 500;
         this.fps = props['fps'] || 120.0;
