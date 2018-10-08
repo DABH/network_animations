@@ -1,12 +1,12 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const UglifyJs = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const webpack = require('webpack');
 const path = require('path');
 
-const extractCSS = new ExtractTextPlugin('bundle.min.css');
-
 module.exports = {
+    mode: 'production',
     resolve: {
         extensions: ['.ts', '.js', '.pug', '.css']
     },
@@ -14,10 +14,10 @@ module.exports = {
         'index.bundle.js': './src/index.ts',
         'aimd1.bundle.js': './src/aimd1.ts',
         'aimd2.bundle.js': './src/aimd2.ts',
-        'bundle.min.css': [
-            __dirname + '/src/style.css',
-            __dirname + '/node_modules/bootstrap/dist/css/bootstrap.min.css'
-        ]
+        //'bundle.min.css': [
+        //    __dirname + '/src/style.css',
+        //    __dirname + '/node_modules/bootstrap/dist/css/bootstrap.min.css'
+        //]
     },
     output: {
         filename: '[name]',
@@ -53,15 +53,11 @@ module.exports = {
                 }
             },
             {
-                test: /\.css$/i,
-                use: extractCSS.extract({
-                    use: {
-                        loader: 'css-loader',
-                        options: {
-                            minimize: true
-                        }
-                    }
-                })
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader'
+                ],
             },
             {
                 test: /\.(jpg|png|svg)$/,
@@ -74,6 +70,26 @@ module.exports = {
             }
         ]
     },
+    optimization: {
+      minimizer: [
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap: false
+        }),
+        //new OptimizeCSSAssetsPlugin({})
+      ],
+      splitChunks: {
+        cacheGroups: {
+          styles: {
+            name: 'styles',
+            test: /\.css$/,
+            chunks: 'all',
+            enforce: true
+          }
+        }
+      },
+    },
     plugins: [
         new webpack.ProvidePlugin({
             $: 'jquery',
@@ -81,26 +97,23 @@ module.exports = {
             'window.jQuery': 'jquery',
             Popper: ['popper.js', 'default']
         }),
-        new UglifyJs({
-            uglifyOptions: {
-                compress: true
-            }
-        }),
         new HtmlWebpackPlugin({
             template: 'src/index.pug',
             filename: 'index.html',
-            chunks: ['global', 'index.bundle.js']
+            chunks: ['global', 'index.bundle.js', 'styles']
         }),
         new HtmlWebpackPlugin({
             template: 'src/aimd1.pug',
             filename: './animations/aimd1.html',
-            chunks: ['global', 'aimd1.bundle.js']
+            chunks: ['global', 'aimd1.bundle.js', 'styles']
         }),
         new HtmlWebpackPlugin({
             template: 'src/aimd2.pug',
             filename: './animations/aimd2.html',
-            chunks: ['global', 'aimd2.bundle.js']
+            chunks: ['global', 'aimd2.bundle.js', 'styles']
         }),
-        extractCSS
+        new MiniCssExtractPlugin({
+          filename: "[name].css",
+        }),
     ]
 };

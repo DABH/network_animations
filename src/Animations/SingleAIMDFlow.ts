@@ -50,9 +50,11 @@ class SingleAIMDFlow extends Animation {
 
     constructor(props?: object) {
         super(props);
+        console.log('new single!');
         this.bufferCapacity = props['bufferCapacity'] || 8;
 
         this.stage = this.createStage();
+        console.log('made stage!');
         this.createComponents(this.layers);
         this.stage.add(this.layers['linkLayer']);
         this.stage.add(this.layers['packetLayer']);
@@ -152,7 +154,7 @@ class SingleAIMDFlow extends Animation {
             this.numPacketsOutstanding -= 1;
             this.sendPacketFromSender();
         }
-        this.stage.find("#windowSizeLabel")[0].text('W = '+Math.trunc(10.0* this.sendWindowSize)/10.0);
+        (this.stage.find("#windowSizeLabel")[0] as Konva.Text).text('W = '+Math.trunc(10.0* this.sendWindowSize)/10.0);
         this.layers['componentLayer'].draw();
     }
 
@@ -183,8 +185,8 @@ class SingleAIMDFlow extends Animation {
 
         // Plot graph
         this.time += 5.0/ this.fps;
-        this.stage.find('#windowSizeCurve')[0].points(this.stage.find('#windowSizeCurve')[0].points()
-            .concat([89+ this.time, 440.0-this.sendWindowSize*10.0]));
+        (this.stage.find('#windowSizeCurve')[0] as Konva.Line).points((this.stage.find('#windowSizeCurve')[0] as Konva.Line)
+            .points().concat([89+ this.time, 440.0-this.sendWindowSize*10.0]));
         if(this.time > 695)
             this.playing = false;
 
@@ -195,7 +197,7 @@ class SingleAIMDFlow extends Animation {
         } else {
             this.linkUtilization = this.linkUtilization*(1-f);
         }
-        this.stage.find('#utilizationLabel')[0].text(
+        (this.stage.find('#utilizationLabel')[0] as Konva.Text).text(
             'util = '+Math.trunc(this.linkUtilization*20.0+0.5)*5+'%');
         this.layers['componentLayer'].draw();
     }
