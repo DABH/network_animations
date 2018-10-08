@@ -14,10 +14,6 @@ module.exports = {
         'index.bundle.js': './src/index.ts',
         'aimd1.bundle.js': './src/aimd1.ts',
         'aimd2.bundle.js': './src/aimd2.ts',
-        //'bundle.min.css': [
-        //    __dirname + '/src/style.css',
-        //    __dirname + '/node_modules/bootstrap/dist/css/bootstrap.min.css'
-        //]
     },
     output: {
         filename: '[name]',
@@ -77,7 +73,6 @@ module.exports = {
           parallel: true,
           sourceMap: false
         }),
-        //new OptimizeCSSAssetsPlugin({})
       ],
       splitChunks: {
         cacheGroups: {
