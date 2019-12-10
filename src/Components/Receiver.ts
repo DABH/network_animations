@@ -13,7 +13,7 @@
  */
 
 import Component from '../Component';
-import * as Konva from "konva";
+import Konva from "konva";
 
 class Receiver extends Component {
     protected computeShapes(): void {

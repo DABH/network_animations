@@ -12,7 +12,7 @@
  * see <https://github.com/DABH/web_animations>.
  */
 
-import * as Konva from "konva";
+import Konva from "konva";
 import SingleAIMDFlow from "../SingleAIMDFlow";
 
 const PacketAnimations = {

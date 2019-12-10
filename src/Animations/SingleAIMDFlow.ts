@@ -23,7 +23,7 @@ import BufferPackets from "../Components/BufferPackets";
 import PacketFactory from "../Components/PacketFactory";
 import Router from "../Components/Router";
 import Receiver from "../Components/Receiver";
-import * as Konva from "konva";
+import Konva from "konva";
 import PacketAnimations from "./Util/PacketAnimations";
 
 class SingleAIMDFlow extends Animation {
