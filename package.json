@@ -43,8 +43,8 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
-    "jquery": "^3.5.0",
-    "konva": "^4.0.18",
-    "popper.js": "^1.16.0"
+    "jquery": "^3.6.0",
+    "konva": "^7.2.4",
+    "popper.js": "^1.16.1"
   }
 }

@@ -33,7 +33,7 @@ class Router extends Component {
             stroke: 'black',
             strokeWidth: 4,
             lineCap: 'butt',
-            lineJoin: 'butt'
+            lineJoin: 'miter'
         });
         this.shapes.push(routerBufferBorder);
     }
