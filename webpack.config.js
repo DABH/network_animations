@@ -67,14 +67,14 @@ module.exports = {
         ]
     },
     optimization: {
-      minimizer: [
+      /*minimizer: [
         new UglifyJsPlugin({
           cache: true,
           parallel: true,
           sourceMap: false
         }),
-      ],
-      splitChunks: {
+      ],*/
+      /*splitChunks: {
         cacheGroups: {
           styles: {
             name: 'styles',
@@ -83,7 +83,7 @@ module.exports = {
             enforce: true
           }
         }
-      },
+      },*/
     },
     plugins: [
         new webpack.ProvidePlugin({
