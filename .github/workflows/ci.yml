@@ -1,0 +1,30 @@
+name: CI Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  Tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node:
+          - 14
+          - 16
+          - 18
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install depdendencies
+        run: yarn
+      - name: Build application
+        run: yarn build
